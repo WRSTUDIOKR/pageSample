@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 공정 데이터 모니터링 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-[#2E3192]">실시간 공정 데이터 모니터링</h1>
+            <p class="text-lg text-gray-600 mt-2">오늘과 어제 데이터를 비교하여 공정 안정성을 확보하고 이상 징후를 신속하게 감지합니다.</p>
+        </header>
+
+        <main>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-[#2E3192]">유량(Flow Rate) 분석</h2>
+                <p class="mt-2 text-gray-600">안정적인 유량은 생산 품질과 효율성의 핵심입니다. 이 차트는 오늘과 어제의 유량 데이터를 비교하여 비정상적인 급증이나 감소를 식별합니다. 특히 설정된 임계값을 초과하는 구간은 붉은색으로 강조되어 즉각적인 조치가 필요함을 알립니다.</p>
+                <div class="relative h-96 w-full max-w-5xl mx-auto mt-6">
+                    <canvas id="flowChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-[#2E3192]">핵심 환경 변수 분석</h2>
+                <p class="mt-2 text-gray-600">온도와 습도는 제품 품질과 공정 효율에 직접적인 영향을 미치는 중요한 환경 변수입니다. 아래 차트들은 어제와 오늘의 환경 데이터 변화 추이를 보여주며, 잠재적 위험 요소를 사전에 파악하는 데 도움을 줍니다.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+                    <div class="p-4 rounded-lg bg-gray-50">
+                        <h3 class="text-xl font-semibold text-center text-[#2E3192]">온도 (°C) 비교</h3>
+                        <div class="relative h-80 w-full max-w-xl mx-auto mt-4">
+                            <canvas id="tempChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-lg bg-gray-50">
+                        <h3 class="text-xl font-semibold text-center text-[#2E3192]">습도 (%) 비교</h3>
+                        <div class="relative h-80 w-full max-w-xl mx-auto mt-4">
+                            <canvas id="humidityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-[#2E3192]">요약 및 권장 조치</h2>
+                <p class="mt-2 text-gray-600">데이터 분석 결과를 바탕으로 다음과 같은 조치를 권장합니다. 각 상황에 맞는 대응 절차를 통해 공정 안정성을 유지하세요.</p>
+                <div class="mt-6 space-y-4">
+                    <div class="flex items-center p-4 border border-red-300 bg-red-50 rounded-lg">
+                        <div class="text-2xl mr-4">🚨</div>
+                        <div>
+                            <h3 class="font-bold text-red-800">상황: 유량 임계값 초과 감지</h3>
+                            <p class="text-red-700">권장 조치: 즉시 관련 밸브 및 펌프 시스템을 점검하고, 원인 파악 후 정상화 절차를 진행하십시오.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-yellow-300 bg-yellow-50 rounded-lg">
+                        <div class="text-2xl mr-4">⚠️</div>
+                        <div>
+                            <h3 class="font-bold text-yellow-800">상황: 온도/습도 패턴 급변</h3>
+                            <p class="text-yellow-700">권장 조치: 공조 시스템(HVAC) 작동 상태를 확인하고, 외부 환경 변화 요인을 분석하여 안정적인 상태를 유지하십시오.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 border border-green-300 bg-green-50 rounded-lg">
+                        <div class="text-2xl mr-4">✅</div>
+                        <div>
+                            <h3 class="font-bold text-green-800">상황: 모든 데이터 안정</h3>
+                            <p class="text-green-700">권장 조치: 현재 공정 상태는 안정적입니다. 지속적인 모니터링을 유지하십시오.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center text-gray-500 mt-10 py-4">
+            <p>데이터 생성일: 2025년 7월 29일</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const labels = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
+        
+        const todayFlowData = [120, 122, 121, 125, 130, 135, 140, 142, 145, 150, 155, 158, 160, 180, 185, 170, 165, 160, 155, 140, 135, 130, 125, 122];
+        const yesterdayFlowData = [118, 119, 120, 122, 128, 133, 138, 140, 141, 144, 148, 150, 152, 153, 155, 154, 150, 148, 142, 138, 132, 128, 123, 120];
+        
+        const todayTempData = [22, 22.1, 22.3, 22.5, 23, 23.5, 24, 24.5, 25, 25.5, 26, 26.2, 26.5, 26.8, 27, 26.5, 26, 25, 24, 23.5, 23, 22.5, 22.2, 22];
+        const yesterdayTempData = [21.5, 21.6, 21.8, 22, 22.5, 23, 23.5, 23.8, 24, 24.2, 24.5, 24.8, 25, 25.2, 25.1, 24.8, 24.5, 24, 23.5, 23, 22.5, 22, 21.8, 21.6];
+
+        const todayHumidityData = [55, 56, 58, 60, 62, 65, 68, 70, 71, 72, 73, 72, 70, 68, 65, 63, 60, 58, 57, 56, 55, 54, 55, 55];
+        const yesterdayHumidityData = [58, 59, 60, 62, 64, 66, 69, 72, 73, 74, 75, 74, 72, 70, 67, 65, 62, 60, 59, 58, 57, 56, 57, 58];
+
+        const flowThreshold = 175;
+
+        const defaultChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#4B5563'
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: '#E5E7EB'
+                    },
+                    ticks: {
+                        color: '#4B5563'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: '#1F2937',
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(46, 49, 146, 0.9)',
+                    titleFont: {
+                        size: 16,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 14
+                    },
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        }
+                    }
+                }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            }
+        };
+
+        new Chart(document.getElementById('flowChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '오늘 유량',
+                        data: todayFlowData,
+                        borderColor: '#00A6ED',
+                        backgroundColor: 'rgba(0, 166, 237, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#00A6ED',
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                    },
+                    {
+                        label: '어제 유량',
+                        data: yesterdayFlowData,
+                        borderColor: '#F36F21',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointBackgroundColor: '#F36F21',
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                ...defaultChartOptions,
+                plugins: {
+                    ...defaultChartOptions.plugins,
+                    annotation: {
+                        annotations: {
+                            thresholdLine: {
+                                type: 'line',
+                                yMin: flowThreshold,
+                                yMax: flowThreshold,
+                                borderColor: '#E71D73',
+                                borderWidth: 2,
+                                borderDash: [6, 6],
+                                label: {
+                                    content: '임계값',
+                                    enabled: true,
+                                    position: 'end',
+                                    backgroundColor: '#E71D73',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            anomalyBox: {
+                                type: 'box',
+                                xMin: 13,
+                                xMax: 14,
+                                yMin: flowThreshold,
+                                yMax: Math.max(...todayFlowData) + 5,
+                                backgroundColor: 'rgba(231, 29, 115, 0.2)',
+                                borderColor: 'rgba(231, 29, 115, 0.4)',
+                                borderWidth: 1
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    ...defaultChartOptions.scales,
+                    y: {
+                        ...defaultChartOptions.scales.y,
+                        title: {
+                            display: true,
+                            text: '유량 (L/min)',
+                            color: '#374151',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('tempChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '오늘 온도',
+                        data: todayTempData,
+                        borderColor: '#00A6ED',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: false,
+                        pointBackgroundColor: '#00A6ED',
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                    },
+                    {
+                        label: '어제 온도',
+                        data: yesterdayTempData,
+                        borderColor: '#F36F21',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointBackgroundColor: '#F36F21',
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                ...defaultChartOptions,
+                scales: {
+                    ...defaultChartOptions.scales,
+                    y: {
+                        ...defaultChartOptions.scales.y,
+                        title: {
+                            display: true,
+                            text: '온도 (°C)',
+                            color: '#374151',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('humidityChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '오늘 습도',
+                        data: todayHumidityData,
+                        borderColor: '#00A6ED',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: false,
+                        pointBackgroundColor: '#00A6ED',
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                    },
+                    {
+                        label: '어제 습도',
+                        data: yesterdayHumidityData,
+                        borderColor: '#F36F21',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointBackgroundColor: '#F36F21',
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                ...defaultChartOptions,
+                scales: {
+                    ...defaultChartOptions.scales,
+                    y: {
+                        ...defaultChartOptions.scales.y,
+                        title: {
+                            display: true,
+                            text: '습도 (%)',
+                            color: '#374151',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
